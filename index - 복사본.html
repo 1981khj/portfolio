@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="utf-8">
+		<title>Web Messenger For Enterprise Login</title>
+		<!-- [D] 개발 중 css 경로는 svn 경로로 작업 부탁드립니다. -->
+		<link rel="stylesheet" type="text/css" href="./css/jquery.mobile-1.1.0.css">
+		<!-- <link rel="stylesheet" type="text/css" href="./css/jquery.mobile.scrollview.css"> -->
+		<link rel="stylesheet" type="text/css" href="./css/msg.css">
+		<script type="text/javascript" src="./js/lib/socket.io.js"></script>
+		<script type="text/javascript" src="./js/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="./js/lib/jquery.mobile.config.js"></script>
+		<script type="text/javascript" src="./js/lib/jquery.mobile-1.1.0.js"></script>
+		<!-- ScrollView 추가-->
+		<!-- <script type="text/javascript" src="./js/lib/jquery.easing.1.3.js"></script> -->
+		<!-- <script type="text/javascript" src="./js/lib/jquery.mobile.scrollview.js"></script> -->
+		<!-- ScrollView 추가 //-->
+		<script type="text/javascript" src="./js/lib/jquery.HuskyCore.js"></script>
+		<script type="text/javascript" src="./js/lib/jquery.tmpl.min.js"></script>
+		<script type="text/javascript" src="./js/lib/jquery.checkSmartphone.js"></script>
+		<script type="text/javascript" src="./js/nts.Utility.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.Auth.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.PresenceIo.js"></script>
+		<!-- <script type="text/javascript" src="./js/nts.WebMsg.TalkIo.js"></script> -->
+		<script type="text/javascript" src="./js/nts.WebMsg.Style.js"></script>		
+		<script type="text/javascript" src="./js/nts.WebMsg.Splash.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.Login.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.Main.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.FavoriteList.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.Talk.js"></script>
+		<script type="text/javascript" src="./js/nts.WebMsg.Setting.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	</head>
+	<!-- [D] 페이지가 로그인 페이지인 경우 body 에 .login 추가 -->
+	<body>
+		<div id="splash" data-role="page">
+			<!-- 컨텐츠 -->
+			<div class="s_spl">
+				<h1 class="bl">Talk Talk</h1>
+				<p class="hide">&copy;NHN Technology Services.</p>
+			</div>
+			<!-- //컨텐츠 -->			
+		</div>
+		<div id="login" data-role="page">
+			<div data-role="content">
+				
+				<!-- 컨텐츠 -->
+				<div class="s_login">
+					<h1 class="sp_txt h_talk bl">Talk Talk</h1>
+					<div class="form">
+						<form id="_login_form" action="#">
+						<label class="ip ip_v1 ip_t">
+							<!-- [D] label.ip 안의 input 에 focus 될시 span 에 .bl 추가 -->
+							<!-- <span>아이디</span> -->
+							<input type="text" id="_loginid" data-role="none" placeholder="아이디">
+						</label>
+						<label class="ip ip_v1 ip_b">
+							<!-- <span>비밀번호</span> -->
+							<input type="password" id="_loginpassword" data-role="none" placeholder="비밀번호">
+						</label>
+						<input type="submit" id="_loginbtn" class="bt bt_1 bt_lg" value="로그인" data-role="none">
+						<label class="hide">
+							<input type="checkbox" id="_login_autochkbox" title="자동 로그인" data-role="none" checked="checked">
+						</label>
+						</form>
+						<button class="bt bt_chk bt_atlg" data-role="none"><em id="_login_autochkbtn" class="on"></em><span>자동 로그인</span></button>						
+					</div>
+					<p id="_loginMsg" class="al">잘못된 아이디입니다.<br>아이디를 다시 입력해 주세요.</p>
+				</div>
+				<!-- //컨텐츠 -->
+	
+			</div>
+		</div>
+		<!-- [D] 활성화된 화면에 따라 m_lst / m_tk 클래스 부여 -->
+		<div id="main" class="m_lst" data-role="page">
+			<div data-role="content">
+				<!-- 상태바 -->
+				<div class="s_sts">
+					<img id="_mainUserImg" src="im/@tmp_profile.png" alt="사용자 이름 넣어주세요">
+					<strong id="_mainUserName">김연아</strong>
+					<em id="_mainNickName">(요리하는 여자)</em>
+					<a href="#" class="bt bt_2 bt_pf bl" title="프로필">프로필</a>
+				</div>
+				<!-- //상태바 -->
+				<!-- 목록 -->
+				<div class="s_lst">
+					<div class="area_t">
+						<ul id="_tab" class="tab">
+						<!-- [D] 선택된 li 에 on 클래스 추가, on 클래스 가진 li 의 다음 li 에 n 클래스 추가 -->
+						<li class="on"><a href="#">친구목록</a></li>
+						<li class="n"><a href="#">대화</a></li>
+						<li><a href="#">설정</a></li>
+						</ul>
+						<label id="_search_lst" class="ip ip_v2 ip_find">
+							<span class="ic ic_find"></span>
+							<!-- <span>친구 검색</span> -->
+							<input type="text" data-role="none" placeholder="친구 검색">
+						</label>
+					</div>
+					<!-- [D] .s_lst 에서 .area_t 뺀 만큼 height 맞춰주세요. -->					
+					<div class="area_lst">
+						<!-- 친구목록 -->
+						<div id="_favorList">
+<script id="_tplGroup" type="text/x-jquery-tmpl">					
+							<h2 class="h_fr" id="${sGroupId}">
+								<strong>
+									<!-- [D] 폴더 열려 있는 상태에선 span.o / 닫혀 있는 상태에서 span.o2 클래스 추가 -->
+									<button class="bt bt_opn" data-role="none"><span class="bl o">여닫기</span></button>
+									<span>${sGroupName}</span>
+								</strong>
+								<a href="#" class="bt_altk">그룹대화</a>
+							</h2>
+</script>
+							<ul class="lst_fr">
+<script id="_tplMember" type="text/x-jquery-tmpl">					
+							<li id="${sUserId}">
+								<a href="#">
+									<!-- [D] 사용자가 프로필 이미지를 등록하지 않은 경우 img 를 빼주세요. 절대 줄바꿈 금지 -->
+									<!-- <span class="pic"><img src="im/@tmp_profile.png" alt="${sName}"></span> -->
+								{{if sNameImg.length > 0}}
+									<span class="pic"><img src="${sNameImg}" alt="${sName}"></span>
+								{{else}}
+									<span class="pic"></span>
+								{{/if}}
+									<!-- [D] 프레젠스 아이콘은 prsn 클래스 사용. -->
+									<span class="prsn ${sStatusClass} bl">${sStatus}</span>
+									<strong>${sNickname}</strong>
+									<em>${sMent}</em>
+								</a>
+							</li>
+</script>
+							</ul>
+						</div>
+						<!-- //친구목록 -->
+						<!-- 대화목록 -->
+						<div id="_msgList">
+							<ul class="lst_tk">
+<script id="_tplTalkHistory" type="text/x-jquery-tmpl">					
+							<li id="${sHistoryId}">
+								<a href="#">
+									<!-- [D] 사용자가 프로필 이미지를 등록하지 않은 경우 img 를 빼주세요. 절대 줄바꿈 금지 -->
+									<!-- <span class="pic"><img src="im/@tmp_profile.png" alt="${sTalkName}"></span> -->
+								{{if sTalkNameImg == null || sTalkNameImg == ""}}
+									<span class="pic"></span>
+								{{else}}
+									<span class="pic"><img src="${sTalkNameImg}" alt="${sTalkName}"></span>
+								{{/if}}
+									<strong>${sTalkName}</strong>
+									<em>${sTalkMsg}</em>
+									<span class="tm">${sTalkTime}</span>
+								</a>
+							</li>
+</script>							
+							</ul>
+						</div>
+						<!-- //대화목록 -->
+						<!-- 세팅목록 -->
+						<div id="_settingList">
+							<div class="set_area">
+								<div class="tmp_set"></div>
+								<input type="button" id="_logout" class="bt bt_1 bt_lg" value="로그아웃" data-role="none">
+							</div>
+						</div>
+						<!-- //세팅목록 -->
+					</div>
+				</div>
+				<!-- //목록 -->
+				<!-- 채팅 -->
+				<!-- [D] 화면에 맞게 height 맞춰주세요.
+					class 추가로 상태를 조절합니다.
+					tk_eof : 대화중인 상대 없음
+					tk_dual : 대화창을 동시에 여러개 띄울 수 있는 상태 (PC) 현재 css 미구현 -->
+				<div class="s_tk">
+					<div class="dsc_tk">
+						<h2 class="bl">Talk Talk</h2>
+						<p>멀티플랫폼을 지원하는 <br>하이브리드 신기술을 이용한 똑똑한 메신저로써, <br>직관적 커뮤니케이션 경험을 제공할 수 있는 <br>톡톡 튀는 신개념 웹메신저입니다.</p>
+					</div>
+<script id="_tplTalkDialog" type="text/x-jquery-tmpl">
+					<!-- <div id="${sTalkDialogId}" class="tk _tk_tmp_"> -->
+				{{if bTempRoom == true}}
+					<div id="${sTalkDialogId}" class="tk _tk_tmp_">
+				{{else}}
+            		<div id="${sTalkDialogId}" class="tk">
+        		{{/if}}
+						<h2><strong>${sTalkName}</strong> <button type="button" class="bt bt_back" data-role="none">이전</button></h2>
+						<!-- [D] 대화창 이름, 최소화,최대화,닫기 버튼은 tk_dual 상태에서만 등장 (PC) 현재 css 미구현 -->
+						<div class="bts">
+							<button type="button" class="bt bt_min bl" title="최소화" data-role="none">최소화</button>
+							<button type="button" class="bt bt_max bl" title="최대화" data-role="none">최대화</button>
+							<button type="button" class="bt bt_clse bl" title="닫기" data-role="none">닫기</button>
+						</div>
+						<!-- [D] 대화창을 한개만 띄울 수 있는 상태에서는 .tk 를 화면에 맞게 height 값을 주세요 -->
+						<dl>
+						<!-- <dl style="height:450px"> -->
+						<!-- 실제 서로간의 대화가 들어가는 영역 -->
+						</dl>
+						<form id="_msg_form" action="#">
+						<div class="tk_ip">
+							<button class="bt bt_2 bt_add" title="초대" data-role="none"><span class="ic ic_add bl">초대</span></button>
+							<button id="_msg_send_btn" class="bt bt_2 bt_sbmt bl" title="전송" data-role="none">전송</button>
+							<label class="ip_tk">
+								<!--<span>입력해주세요</span>-->
+								<input id="_msg_send_txt" type="text" data-role="none" placeholder="입력해주세요">
+								<!-- <input type="submit" data-role="none" placeholder="입력해주세요"> -->								
+							</label>
+						</div>
+						</form>
+					</div>
+</script>
+<script id="_tplMyTalk" type="text/x-jquery-tmpl">	
+						<dt class="me">${sTalkName}</dt>
+						<dd class="me"><p id="_msg_${sTalkMsgId}">${sTalkMsg}</p><span class="tm">${sTalkTime}</span></dd>
+</script>
+<script id="_tplYourTalk" type="text/x-jquery-tmpl">
+						<dt>${sTalkName}</dt>
+						<dd><p id="_msg_${sTalkMsgId}">${sTalkMsg}</p><span class="tm">${sTalkTime}</span></dd>
+</script>
+				</div>
+				<!-- //채팅 -->	
+			</div>		
+		</div>
+		<script type="text/javascript" src="./js/nts.bootstrap.js"></script>	
+	</body>
+</html>
